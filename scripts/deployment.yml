@@ -1,0 +1,38 @@
+# Write Kubernetes Deployment Script
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-apis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-apis
+  template:
+    metadata:
+      labels:
+        app: book-apis
+    spec:
+      containers: 
+      - name: book-apis
+        image: book-apis:1
+        ports:
+        - containerPort: 5000
+        imagePullPolicy: Never
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://book_search_db_user:UdZPm4XVYVOMw6Lxg9t8f8OnAmuTOouE@dpg-crd8jql2ng1s73fq49r0-a.oregon-postgres.render.com/book_search_db"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-apis
+spec:
+  selector:
+    app: book-apis
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 32500
